@@ -79,4 +79,8 @@ public class MyImage {
     public void setPixel(int x, int y, int r, int g, int b) {
         image.setRGB(x, y, buildRGB(r, g, b));
     }
+
+    public int getAverage(int x, int y) {
+        return (getRed(x, y) + getGreen(x, y) + getBlue(x, y)) / 3;
+    }
 }

@@ -1,6 +1,7 @@
 package org.hanuna.cuttingimage.run;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -8,29 +9,44 @@ import java.util.Set;
  */
 public class CoolSelector {
     private final MyImage image;
-    private final Set<Point> coolPixels = new HashSet<Point>();
+    private final int[][] mask;
 
 
     public CoolSelector(MyImage image) {
         this.image = image;
+        mask = new int[image.getWidth()][image.getHeight()];
     }
 
-    private boolean isCoolPixel(int x, int y) {
-        int controlCount = image.getRed(x-1, y) + image.getRed(x, y-1) - 2 * image.getRed(x, y);
+    private int average(int x, int y, int r) {
+        int s = 0;
+        for (int i = -r; i < r + 1; i++) {
+            for (int j = -r; j < r + 1; j++) {
+                s += image.getAverage(x + i, y + j);
+            }
+        }
+        return s / ((2 * r + 1) * (2 * r + 1));
+    }
 
-        return Math.abs(controlCount) > 10;
+    private int isCoolPixel(int x, int y) {
+        int r = 4;
+        int controlCount = average(x - r, y, r) + average(x, y - r, r)  - 2 * average(x, y, r);
+
+        return Math.abs(controlCount) > 10 ? Math.abs(controlCount) : 0;
     }
 
     public void run() {
-        for (int i = 10; i < image.getWidth() - 10; i++) {
-            for (int j = 10; j < image.getHeight() - 10; j++) {
-                if (isCoolPixel(i, j)){
-                    coolPixels.add(new Point(i, j));
-                }
+        int padding = 20;
+        for (int i = padding; i < image.getWidth() - padding; i++) {
+            for (int j = padding; j < image.getHeight() - padding; j++) {
+                mask[i][j] = isCoolPixel(i, j);
             }
         }
-        for (Point point : coolPixels) {
-            image.setPixel(point.x, point.y, 255, 0, 0);
+        for (int i = padding; i < image.getWidth() - padding; i++) {
+            for (int j = padding; j < image.getHeight() - padding; j++) {
+                if (mask[i][j] > 0) {
+                    image.setPixel(i, j, mask[i][j] * 10, 0, 0);
+                }
+            }
         }
         image.writeImage();
     }
