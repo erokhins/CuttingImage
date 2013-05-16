@@ -17,6 +17,7 @@ import java.io.IOException;
 public class MyImage {
     private final String OPEN_PATH = "img/in/";
     private final String SAVE_PATH = "img/out/";
+    private final int[][] imageBlue;
 
     private final String imageName;
     private final BufferedImage image;
@@ -50,7 +51,22 @@ public class MyImage {
         image = ImageIO.read(new File(OPEN_PATH + imageName));
         colorModel = image.getColorModel();
         raster = image.getRaster();
+
+        imageBlue = new int[image.getWidth()][image.getHeight()];
+        initBlue();
     }
+
+    private void initBlue() {
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                imageBlue[i][j] = colorModel.getBlue(raster.getDataElements(i, j, null));
+            }
+        }
+    }
+
+
+
+
 
     public void writeImage() {
         writeJpeg(image, SAVE_PATH + imageName, .90f);
@@ -73,7 +89,7 @@ public class MyImage {
     }
 
     public int getBlue(int x, int y) {
-        return colorModel.getBlue(raster.getDataElements(x, y, null));
+        return imageBlue[x][y];
     }
 
     public void setPixel(int x, int y, int r, int g, int b) {
