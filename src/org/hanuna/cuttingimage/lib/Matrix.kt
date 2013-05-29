@@ -22,24 +22,27 @@ public trait MutableMatrix<T> : Matrix<T> {
     fun set(x: Int, y: Int, value: T)
 }
 
-public class MutableMatrixImpl<T> (
+public class MutableMatrixInt (
         override val width: Int,
         override val height: Int,
-        initialCellValues: (Int, Int) -> T
-) : MutableMatrix<T> {
+        initialCellValues: (Int, Int) -> Int
+) : MutableMatrix<Int> {
 
-    private val cells: Array<T> = Array(width * height) {
-        i ->
-        val x = i % width
-        val y = i / width
-        initialCellValues(x, y)
+    private val cells: IntArray = IntArray(width * height);
+
+    {
+        for (i in 0..width-1) {
+            for (j in 0..height-1) {
+                set(i, j, initialCellValues(i, j))
+            }
+        }
     }
 
-    override fun get(x: Int, y: Int): T {
+    override fun get(x: Int, y: Int): Int {
         return cells[toIndex(x, y)]
     }
 
-    override fun set(x: Int, y: Int, value: T) {
+    override fun set(x: Int, y: Int, value: Int) {
         cells[toIndex(x, y)] = value
     }
 
@@ -58,7 +61,6 @@ public class MutableMatrixImpl<T> (
     }
 }
 
-public fun MutableMatrix<T>(w: Int, h: Int, f: (x: Int, y: Int) -> T): Matrix<T> = MutableMatrixImpl(w, h, f)
 
 public fun <T> MutableMatrix<T>.fill(f: (x: Int, y: Int, value: T) -> T) {
     for (y in 0..height - 1) {
@@ -76,5 +78,4 @@ public fun <T> MutableMatrix<T>.copyFrom(m: Matrix<T>) {
     }
 }
 
-public fun <T> Matrix<T>.toMutableMatrix(): MutableMatrix<T> = MutableMatrixImpl(width, height) {x, y -> get(x, y)}
 
