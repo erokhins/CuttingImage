@@ -1,0 +1,4 @@
+convert -strip -resize 50% $1 /tmp/temp.jpg
+cutimg /tmp/temp.jpg /tmp/temp2.jpg
+convert -resize 70% /tmp/temp2.jpg $2
+echo "$1 finish"
