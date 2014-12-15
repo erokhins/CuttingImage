@@ -37,5 +37,5 @@ fun main(args: Array<String>) {
     val crop = LineSelector1(image).getCrop()
 
     val resultImage =  image.cropImage(crop)
-    writeJpeg(resultImage, outName, .90)
+    writeJpeg(resultImage, outName, 0.90f)
 }
